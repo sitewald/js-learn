@@ -316,16 +316,99 @@
 	
 	
 	
+	/* Свойства класса ******/
+	
+	// Не одобрено, но перспективно:
+	
+	class A {
+		count = 0;
+		
+		inc = () => {
+			this.count++; // сохранит ссылку на this, даже если будет использована, как вложенная
+		}
+		
+		static commonCount = 10; // статическое поле класса, обращение к нему - через имя класса
+		
+		static commonInc = function() {
+			A.commonCount++;
+		}
+	}
+	
+	// Стандартный вариант записи:
+	
+	class B {
+		constructor() {
+			this.count = 0;
+			this.inc = () => {
+				this.count++;
+			};
+		}
+	}
+	
+	// Статические поля(свойства) и методы:
+	
+	B.commonCount = 10;
+	B.commonInc = function () {
+		B.commonCount++;
+	}
 	
 	
 	
 	
+	/* Модули ******/
 	
+	// В файле, который будет экспортировать после всех определений - именованный экспорт:
 	
+	export {
+		someFunction, someConst, longNameFunction as lnFunc // можно использовать псевдонимы через as
+	}
 	
+	// В файле, который будет импортировать, вверху:
 	
+	import { someFunction, someConst as sc, lnFunc } from './sourceFile'; // тоже можно использовать псевдонимы
 	
+	// можно импортировать всё в виде одного объекта:
 	
+	import { obj } from './sourceFile';
+	
+	obj.someFunction();
+	
+	// экспорт по умолчанию:
+	
+	export default someFunction;
+	
+	// импорт по умолчанию:
+	
+	import someFunction from './sourceFile';
+	
+	// или можно сразу переименовать импорт (не используя as):
+	
+	import sf from './sourceFile'
+	
+	// можно комбинировать:
+	
+	import sf, { someConst, lnFunc } from './sourceFile';
+	
+	// или:
+	
+	import sf, * as obj from './sourceFile';
+	
+	// при экспорте по умолчанию (он может быть только один)
+	// можно экспорт ставить прямо перед определением:
+	
+	export default class MyClass {
+		
+	}
+	
+	// Файл может ничего не экспортировать, но его можно подключить для выполнения его содержимого:
+	
+	import './style.css';
+	
+	import './sayHello'; // console.log('hello') в файле sayHello.js
+	
+	// В случае импорта библиотеки, установленной, как зависимость, путь прописывать не надо:
+	
+	import React from 'react';
 	
 	
 	
