@@ -38,6 +38,9 @@
 	
 	// ECMAScript2019, JSX => Babel => обычный javascript для всех браузеров
 	
+	// "Babel is a JavaScript transpiler (compiler) that converts edge JavaScript into plain old ES5 JavaScript
+	// that can run in any browser (even the old ones)"
+	
 	
 	
 	/* React element ***/
@@ -47,7 +50,7 @@
 	const el = React.createElement('h1', null, 'Hello);
 	
 	// element tree
-	const el = ( // если несколько строк
+	const el = ( // если несколько строк - используем скобки
 		<div>
 			<p>1</p>
 			<p>2</p>
@@ -79,24 +82,99 @@
 	
 	
 	
+	/* JSX ***/
+	
+	// Должен иметь один корень
+	
+	// Для использования выражений, переменных, вызова функций использовать {}
+	
+	// Внутри скобок в качестве child-элементов - только простые типы или
+	// другие React элементы - объекты нельзя - будет ошибка!
+	// Если внутрь передать null, undefined, true, false, то ничего в этом месте не отобразится
+	
+	const el = <h1>{1 + 1}</h1>
+	
+	const el = <h1>{ loggedIn ? 'Welcome' : 'Log in' }</h1>
+	
+	const el = <p>{ (new Date()).toString() }
+	
+	// Можно другой элемент записать в переменную:
+	
+	const small = <p>1<p>;
+	
+	const big = <div>{small}</div>;
+	
+	// Можно использовать для атрибутов (называются свойствами - properties)
+	
+	// Для html-тегов ожидаемыми будут только строки:
+	
+	const str = 'input something';
+	
+	const el = <input placeholder={str} />
+	
+	// за исключением стилей, которые можно передать в виде объекта.
+	// CSS-свойства пишутся в camel case:
+	
+	const myStyle = {
+		marginTop: "20px"
+	};
+	
+	const el = <div style={myStyle}></div>
+	
+	// Для React элементов - любые данные - простые типы, объекты и т.д. 
+	
+	const obj = { name: 'Bob' };
+	
+	<App name={obj} />
+	
+	// Обычные html-атрибуты в JSX называются в camel case
+	
+	<input tabIndex='1' />
+	
+	// Есть два переименованных
+	
+	<div className='some'></div> // className вместо class
+	
+	<input type='text' id='first' />
+	<label htmlFor='first'></label> // htmlFor вместо for
+	
+	// JSX противодействует script-injection
+	
+	const bad = "<script>alert('bad')</script>";
+	
+	const el = (
+		<div>
+		{bad} // код выполнен не будет и отрисуется в виде строки
+		<div>
+	);
 	
 	
 	
+	/* Структура проекта ***/
+	
+	// Папка src/components
+	
+	// Один component - один файл (export default)
 	
 	
 	
+	/* Свойства компонента ***/
 	
+	const Item = (props) => { // передаются в качестве первого параметра, обычно называют props
+		return (
+			<h1>{props.name}</h1>
+		);
+	};
 	
+	<Item name='first' />
 	
+	// Можно применить деструктуризацию, значение по умолчанию:
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	const Item = ({ name = 'empty' }) => {
+		return (
+			<h1>{name}</h1>
+		);
+	};
 	
 	
 	
