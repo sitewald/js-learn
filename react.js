@@ -428,6 +428,81 @@
 	}
 	</Item>
 	
+	// Передаваемые в this.props.children элементы нельзя менять, они immutable
+	// Для добавления дополнительных свойств элементам можно использвать 
+	
+	React.clone(el, {item}); // Возвращает клон элемента. Второй параметр - добавляемое свойство.
+	
+	
+	
+	/* HOC (Higher Order Components) - компоненты высшего порядка ***/
+	
+	// Это компоненты-обёртки, призванные исключить дублирование кода.
+	// Можно строить компоненты, вложенные один в другой.
+	// Пример - компонент-функция, который принимает компонент, который будет
+	// визуализирован и функцию, которая нужна для получения данных с сервера и
+	// получив данные, передаёт их визуальному компоненту.
+	
+	
+	
+	/* Context ****/
+	
+	// Решает проблему property drill - когда для передачи данных от
+	// родительских компонентов к низшим по иерархии нужно передавать
+	// эти данные через все промежуточные компоненты
+	
+	import React from 'react';
+	
+	const { Provider: MyNameProvider, Consumer: MyNameConsumer /* псевдоним */ } = React.createContext();
+	
+	export {
+		MyNameProvider,
+		MyNameConsumer
+	};
+	
+	// -----
+	
+	// Теперь оборачиваем компоненты в provider
+	// и используем consumer в нужном дочернем компоненте - можно для этого
+	// создать HOC
+	
+	import MyNameConsumer from './...';
+	
+	export default class Child extends Component {
+		render() {
+			return (
+				<MyNameConsumer>
+				{
+					(someValue) => return <div>{someValue}</div>; // обращение к значению
+				}
+				</MyNameConsumer>
+			);
+		}
+	}
+	
+	<App>
+		<MyNameProvider value={someValue}> // значение, которое будет доступно череp Consumer
+			<Comp1>
+				<Comp2>
+					<Child />
+				</Comp2>
+			</Comp1>
+		</MyNameProvider>
+	</App>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
