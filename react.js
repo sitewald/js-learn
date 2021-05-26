@@ -482,13 +482,130 @@
 	
 	<App>
 		<MyNameProvider value={someValue}> // значение, которое будет доступно череp Consumer
-			<Comp1>
+			<Comp1>                        // Можно передавать простые значения, объекты, функции и т.д.
 				<Comp2>
 					<Child />
 				</Comp2>
 			</Comp1>
 		</MyNameProvider>
 	</App>
+	
+	
+	
+	/* defaultProps ***/
+	
+	// Можно задать значения свойств компонента по умолчанию (на случай, если они не будут переданы)
+	
+	// Для функциональных компонентов
+	
+	Item.defaultProps = {
+		name: 'empty'
+	};
+	
+	// Для компонентов-классов
+	
+	class Item extends Component {
+		
+		static defaultProps = {
+			name: 'empty'
+		};
+	}
+	
+	
+	
+	/* propTypes ***/
+	
+	// Механизм проверки типа значения, передаваемого в свойство (без typescript)
+	
+	class .... {
+		
+		static propTypes = {
+			name: (props, propName, componentName) => {
+				const value = props[propName];
+				
+				if (typeof value === 'string') {
+					return null; // Валидация успешно пройдена
+				}
+				
+				return new TypeError(`${componentName}: ${propName} must be string!`); // Валидация не пройдена, 
+																					   // возвращаем ошибку
+			}
+		}
+		
+	}
+	
+	
+	
+	/* Хуки ***/
+	
+	// Версия React не ниже 16.8
+	
+	// ---------- useState - позволяет работать со state в функциональных компонентах
+	
+	import React, { useState } from 'react';
+	
+	// Принимает исходное значение и возвращает массив с 2 элементами (деструктурируем его):
+	// текущее значение state и функцию для изменения state (в данном случае setColor - можно
+	// называть, как удобно
+	const [color, setColor] = useState('white');
+	
+	setDark = () => {
+		setColor('black'); // устанавливаем state в новое значение
+	};
+	
+	// Если требуется использовать предыдущее значение, то надо использовать тот же механизм,
+	// как в методе класса setState(), когда внутрь передаётся функция:
+	
+	const [count, setCount] = useState(0);
+	
+	//...
+	useState((s) => s + 1); // писать useState(count + 1) НЕЛЬЗЯ!!!
+	//...
+	
+	// В случае, если в качестве state используется объект, то нужно передать все поля.
+	// В отличие от метода класса setState(..), в который можно передавать только
+	// изменённые поля, хук useState перезапишет старый объект новым объектом. Поэтому:
+	
+	useState((s) => { name: 'new name', ...s }); // передаём новое значение для name и все остальные поля
+	
+	// -------- useContext - заменяет вызов Context.Consumer во вложенном компоненте
+	
+	// Оборачивание в provider - без изменений
+	<App>
+		<MyContext.Provider value={10}>
+			<Tree>
+				<MainBranch>
+					<Branch />
+				</MainBranch>
+			</Tree>
+		</MyContext.Provider>
+	</App>
+	
+	// .....
+	
+	import React, { useContext } from 'react';
+	import MyContext from '../my-context';
+	
+	const Branch = () => {
+		const value = useContext(MyContext);
+		
+		return <div>{value}</div>;
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
