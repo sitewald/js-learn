@@ -1,12 +1,16 @@
 
 
 
-	/* React router ***/
+	// -------------------- React router
 	
 	// Это не часть React - это библиотека
 	
 	// cmd
 	// npm install react-router-dom // версия для браузера
+	
+	
+	
+	/* BrowserRouter, Route ****/
 	
 	import { BrowserRouter as Router, Route } from 'react-router-dom';
 	
@@ -49,7 +53,10 @@
 		}
 	}
 	
-	// Компонент Link
+	
+	
+	
+	/* Link ***/
 	
 	import { Link } from 'react-router-dom';
 	
@@ -67,6 +74,31 @@
 	
 	
 	
+	/* withRouter() ***/
+	
+	// Компонент высшего порядка (HOC - higher order component)
+	// который при использовании свойства component
+	
+	<Route path='/list' component={List} />
+	
+	// позволяет получить доступ к объекту, который явно передаётся при
+	// использовании render-функции
+	
+	<Route path='/list' render={({ match, location, history }) => {...}} />
+	
+	// withRouter() можно использовать для программного перехода на нужную страницу:
+	
+	const List = ({ match, location, history ) => {
+		return (
+		
+			// Метод history.push(..) добавляет в историю браузера нужный адрес
+			// и инициирует переход по нему:
+			<button onClick={() => history.push('/home')}>To Home</button>
+			<button onClick={() => history.push('/about')}>About</button>
+		);
+	};
+	
+	export default withRouter(List);
 	
 	
 	
