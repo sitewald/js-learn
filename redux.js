@@ -176,26 +176,35 @@
 		);
 	};
 
-	// Функция для связи state со свойствами компонента. Функция connect передаст в неё state (см. ниже)
+	// mapStateToProps - функция для связи state со свойствами компонента. Функция connect передаст в неё state (см. ниже)
 	const mapStateToProps = (state) => {
 		return {
 			counter : state // state простой, состоит из одного counter
 		};
 	};
 
-	// const {inc, dec} = actions;
+	const {inc, dec} = actions;
 
-	// Функция для связи action creators со свойствами компонента. Функция connect передаст в неё store.dispatch(..) (см. ниже)
+	// mapDispatchToProps - функция для связи action creators со свойствами компонента. Функция connect передаст в неё store.dispatch(..) (см. ниже)
+	// 1 вариант записи:
 	const mapDispatchToProps = (dispatch) => {
-		/*
 		return {
 			inc: () => dispatch(inc()),  // возвращает объект с обёрнутыми в dispatch функции action-creators
 			dec: () => dispatch(dec()),
-			rnd: () => dispatch(rnd(Math.random())
+			rnd: (data) => dispatch(rnd(data))
 		};
-		*/
-		
-		return bindActionCreators(actions, dispatch); // или так, если action-creators не принимают дополнительных аргументов
+	};
+	
+	// 2 вариант - с использованием bindActionCreators:
+	const mapDispatchToProps = (dispatch) => {
+		return bindActionCreators(actions, dispatch);
+	};
+	
+	// 3 вариант - если в качестве mapDispatchToProps передать объект, то connect сама вызовет bindActionCreators внутри себя
+	// и компонент получит свойства для вызова нужных actions:
+	const mapDispatchToProps = {
+		inc, // свойство, через которое компонент вызовет dispatch(inc())
+		dec
 	};
 
 	// Функция connect - компонент высшего порядка, которая возвращает функцию, оборачивающую
