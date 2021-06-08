@@ -66,6 +66,16 @@
 	
 	// Action может не быть чистой функцией (но желательно, чтобы был)
 	
+	// Важно!!! - в отличие от метода класса setState, куда можно передать лишь изменённые поля и React
+	// заменит ими старые значения, а остальные будут сохранены, Reducer должен возвращать ПОЛНЫЙ state -
+	// тот же принцип, что и в хуке useState, который перезаписывает объект новым объектом, поэтому,
+	// если в качестве state используется объект, то:
+	
+	const reducer = (state, action) => {
+		return { ...state, name: 'one' };
+	};
+	
+	
 	
 	/* Redux Store ****/
 	
@@ -203,20 +213,35 @@
 	// 3 вариант - если в качестве mapDispatchToProps передать объект, то connect сама вызовет bindActionCreators внутри себя
 	// и компонент получит свойства для вызова нужных actions:
 	const mapDispatchToProps = {
-		inc, // свойство, через которое компонент вызовет dispatch(inc())
+		inc, // этот action creator будет связан с одноимённым свойством, через которое компонент сможет вызывать dispatch(inc())
 		dec
 	};
 
 	// Функция connect - компонент высшего порядка, которая возвращает функцию, оборачивающую
 	// передаваемый компонент для связи его со store в соответствии с mapStateToProps и mapDispatchToProps.
 	// Связь со store осуществляется через consumer контекста, получаемого от Provider (см. ниже)
-	const ConnectWrapper = connect(mapStateToProps, mapDispatchToProps)(Counter);
+	export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+	
+	//....
 
 	ReactDOM.render((
 		<Provider store={store}> // Провайдер для передачи store вниз по иерархии. Инициирует перерисовку компонентов
-			<ConnectWrapper />	 // при изменении store
+			<Counter />	         // при изменении store
 		</Provider>
 	), document.getElementById('root'));
+	
+	// У mapStateToProps и mapDispatchToProps есть второй аргумент - ownProps
+	// Это те свойства компонента, которые он получил сверху, например от компонента
+	// высшего порядка, который обернул функцию connect:
+	
+	const mapStateToProps = (state, ownProps) => {
+		return {
+			counter: state.counter,
+			someData: ownProps.someData
+		};
+	};
+	
+	export default withSomeData(connect(mapStateToProps, mapDispatchToProps)(Wrapped));
 	
 	
 	
