@@ -246,17 +246,109 @@
 	
 	
 	
+	/* Расширение функциональности React store ******/
+	
+	// ---- a) Enhancers (усилители) - переопределение createStore, передаются вторым аргументом в createStore
+	
+	import { createStore } from 'redux';
+	
+	const logAll = (createStore) => (...args) => { // принимает базовую реализацию createStore и возвращает
+												   // новую (переопределённую) функцию createStore
+		const store = createStore(...args);
+		
+		const { dispatch } = store.dispatch; // сохраняем базовую реализацию dispatch
+		
+		store.dispatch = (action) => { // переопределяем dispatch
+			console.log(action);
+			
+			dispatch(action); // вызов базовой реализации
+		};
+		
+		return store;
+	};
+	
+	const store = createStore(reducer, logAll); // теперь при вызове любого action, оно будет выводиться в консоли
+	
+	// Для композиции нескольких enhancers можно использовать функцию compose:
+	
+	import { compose } from 'redux';
+	
+	const store = createStore(reducer, compose(first, second)); // важно учитывать порядок для композиции enhancers -
+																// что во что будет вложено
+	
+	// Enhancers используются редко (есть готовые варианты, которые можно установить), чаще используют Middleware:
+	
+	
+	// ---- b) Middleware -- переопределяет базовую реализацию dispatch
+	
+	// Сигнатура middleware - внешняя функция принимает store (не весь store, только функции getState и dispatch),
+	// который может быть необходим в middleware, например, если нужно вывести значение state. Внешняя функция 
+	// возвращает функцию, которая принимает
+	// базовую реализацию dispatch и эта функция должна вернуть новую реализацию dispatch.
+	// Принято использовать вместо dispatch название next, поскольку подразумевается цепочка
+	// вызовов нескольких Middleware, которая в итоге передаст последний dispatch в reducer:
+	
+	const logMiddleware = (store) => (next) => (action) => { // или ({ getState }) => (next) => (action) => {
+		const some = store.getState().some;
+		console.log(action.type, some);
+		next(action);
+	};
+	
+	// Если store не используется, его передавать во внешнюю функцию не надо, но она должна быть:
+	
+	const stringMiddleware = () => (next) => (action) => {
+		if (typeof action === 'string') { // теперь вместо action можно передавать ключ-строку
+			return next({
+				type: action
+			});
+		}
+		
+		next(action);
+	};
+	
+	// Для передачи middleware используется функция applyMiddleware (это store enhancer)
+	
+	import { createStore, applyMiddleware } from 'redux';
+	
+	// Порядок передачи middleware в applyMiddleware определяет порядок вызова middleware
+	const store = createStore(reducer, applyMiddleware(stringMiddleware, logMiddleware));
+	
+	// Вместо объекта action передаётся строка-ключ. stringMiddleware вызовется первой (см. выше)
+	// и преобразует эту строку в action. Далее, logMiddleware использует свойство type переданного
+	// объекта для записи в консоль. Если при вызове applyMiddleware поменять middleware местами,
+	// то будет ошибка, потому, что вместо объекта в logMiddleware будет передана строка
+	store.dispatch('SOME_ACTION');
+	
+	// Есть много готовых middleware (в основном все, которые нужны)
+	
+	// Один, из самых популярных - thunk
+	// Позволяет передать в store функции, как действия.
+	// Таким функциям он передаёт dispatch() и getState()
+	
+	npm install redux-thunk
+	
+	import thunkMiddleware from 'redux-thunk';
+	
+	const getPerson = (id) => (dispatch) => { // функция принимает параметр id и возвращает action creator
+		dispatch({ type: 'FETCH_PERSON_REQUEST'});
+		
+		fetchPerson(id) // асинхронное действие
+			.then((data) => dispatch({type: 'FETCH_PERSON_SUCCESS', data}))
+			.catch((error) => dispatch({type: 'FETCH_PERSON_FAILURE', error }));
+	};
+	
+	store.dispatch(getPerson(1));
 	
 	
 	
 	
+	/* Naming convention для actions ****/
 	
+	// При работе с сервером принято использовать такие названия:
 	
-	
-	
-	
-	
-	
+	'FETCH_#_REQUEST'
+	'FETCH_#_SUCCESS'
+	'FETCH_#_FAILURE' // где # - назание сущности данных, например 'FETCH_PERSON_FAILURE'
 	
 	
 	
