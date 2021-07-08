@@ -216,6 +216,13 @@
 		inc, // этот action creator будет связан с одноимённым свойством, через которое компонент сможет вызывать dispatch(inc())
 		dec
 	};
+	
+	// 4 вариант - вместо actions можно передать простые функции (для отладки во время разработки):
+	const mapDispatchToProps = () => {
+		return {
+			onSomeDo: (id) => console.log(`something do with ${id}`),
+		}
+	};
 
 	// Функция connect - компонент высшего порядка, которая возвращает функцию, оборачивающую
 	// передаваемый компонент для связи его со store в соответствии с mapStateToProps и mapDispatchToProps.
